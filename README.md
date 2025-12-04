@@ -52,7 +52,21 @@ Install python requirements:
 ```bash
 pip install -r requirements.txt
 ```
+**Important:** This project requires NumPy 1.x due to compatibility with OpenCV and matplotlib. NumPy 2.x will cause runtime errors.
 
+**Recommended: Using Virtual Environment**
+
+To avoid dependency conflicts with system packages, we strongly recommend using a virtual environment:
+```bash
+cd ~/ap_nongps
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install "numpy<2"  # Install NumPy 1.x first
+pip install -r requirements.txt
+```
+
+**Troubleshooting:** If you encounter issues during setup, please refer to [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common problems and solutions.
 
 ## Terminal 1: 
 
