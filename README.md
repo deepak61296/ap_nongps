@@ -1,7 +1,133 @@
 # ap_nongps
 This repository is a work-in-progress and need further modifications. Much of the code variables have been hardcoded to test the algorithm and it'll be solved in upcoming commits. 
 
-## Setup script
+## 🚀 Quick Start with Docker (Recommended)
+
+Docker provides the easiest way to get started without worrying about dependency conflicts or system configuration.
+
+### Prerequisites
+
+1. **Install Docker and Docker Compose**
+   ```bash
+   # Install Docker
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   
+   # Add your user to docker group (logout and login after this)
+   sudo usermod -aG docker $USER
+   
+   # Install Docker Compose
+   sudo apt-get install docker-compose-plugin
+   ```
+
+2. **Install NVIDIA Container Toolkit** (Required for GPU acceleration with Gazebo)
+   ```bash
+   # Add NVIDIA package repositories
+   distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+   curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+   curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+   
+   # Install nvidia-container-toolkit
+   sudo apt-get update
+   sudo apt-get install -y nvidia-container-toolkit
+   
+   # Restart Docker
+   sudo systemctl restart docker
+   ```
+
+3. **Configure X11 Display Forwarding**
+   
+   Docker containers need access to your X11 display server to show Gazebo GUI.
+   
+   **Option A: Quick Setup (Less Secure, Good for Testing)**
+   ```bash
+   # Allow local connections to X server
+   xhost +local:docker
+   ```
+   
+   **Option B: Secure Setup (Recommended for Regular Use)**
+   ```bash
+   # Create a .Xauthority file for Docker
+   xauth list
+   
+   # Allow specific container access
+   xhost +local:$(docker inspect --format='{{ .Config.Hostname }}' ap_nongps_container)
+   ```
+   
+   **For Wayland Users:**
+   If you're using Wayland instead of X11, you may need to use XWayland:
+   ```bash
+   # Check if you're using Wayland
+   echo $XDG_SESSION_TYPE
+   
+   # If output is "wayland", ensure XWayland is running
+   # Set DISPLAY variable
+   export DISPLAY=:0
+   ```
+
+### Running with Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/snktshrma/ap_nongps.git
+   cd ap_nongps
+   ```
+
+2. **Build the Docker image**
+   ```bash
+   docker-compose build
+   ```
+   This will take 10-15 minutes on the first run as it downloads and compiles all dependencies.
+
+3. **Start the container**
+   ```bash
+   # Enable X11 forwarding first
+   xhost +local:docker
+   
+   # Start container
+   docker-compose up -d
+   
+   # Access the container shell
+   docker exec -it ap_nongps_container bash
+   ```
+
+4. **Inside the container, follow the usage instructions below** (Terminal 1, 2, 3 sections)
+
+5. **Stop the container**
+   ```bash
+   docker-compose down
+   ```
+
+### Docker Troubleshooting
+
+**GUI Not Showing:**
+```bash
+# Verify DISPLAY is set
+echo $DISPLAY
+
+# Re-enable X11 forwarding
+xhost +local:docker
+
+# Check if container can access display
+docker exec -it ap_nongps_container bash -c "echo \$DISPLAY"
+```
+
+**GPU Not Working:**
+```bash
+# Verify nvidia-docker is installed
+docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+
+# Check GPU access in container
+docker exec -it ap_nongps_container nvidia-smi
+```
+
+---
+
+## Manual Setup (Alternative to Docker)
+
+If you prefer to install dependencies directly on your system, follow these instructions.
+
+### Setup script
 You can clone this repo to $HOME and run the ./setup.sh script directly to set it all up at once (give root access if required (sudo)).
 
     chmod +x setup.sh
