@@ -5,6 +5,22 @@ This repository is a work-in-progress and need further modifications. Much of th
 
 Docker provides the easiest way to get started without worrying about dependency conflicts or system configuration.
 
+### Complete Setup Test (Fresh System)
+
+To test the complete setup from scratch (simulates a fresh system):
+
+```bash
+./full_setup_test.sh
+```
+
+This script will:
+1. Stop any existing containers
+2. Rebuild the Docker image from scratch (10-15 minutes)
+3. Start the container
+4. Run all verification tests
+
+After completion, proceed to "Running with Docker" below.
+
 ### Prerequisites
 
 1. **Install Docker and Docker Compose**
