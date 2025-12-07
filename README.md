@@ -86,14 +86,61 @@ Docker provides the easiest way to get started without worrying about dependency
    
    # Start container
    docker-compose up -d
-   
-   # Access the container shell
-   docker exec -it ap_nongps_container bash
    ```
 
-4. **Inside the container, follow the usage instructions below** (Terminal 1, 2, 3 sections)
+4. **Verify the setup**
+   ```bash
+   ./test_container.sh
+   ```
 
-5. **Stop the container**
+5. **Run the simulation** (requires 4 separate terminals)
+
+   **Terminal 1 - Launch Gazebo:**
+   ```bash
+   docker exec -it ap_nongps_container bash
+   ```
+   Inside the container:
+   ```bash
+   cd /root/ap_nongps
+   gz sim -v4 -r iris_runway_ngps.sdf
+   ```
+
+   **Terminal 2 - Enable Camera Streaming** (wait for Gazebo to fully load first):
+   ```bash
+   docker exec -it ap_nongps_container bash
+   ```
+   Inside the container:
+   ```bash
+   gz topic -t /world/iris_runway/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/image/enable_streaming -m gz.msgs.Boolean -p 'data: 1'
+   ```
+
+   **Terminal 3 - Start ArduPilot:**
+   ```bash
+   docker exec -it ap_nongps_container bash
+   ```
+   Inside the container:
+   ```bash
+   cd /root/ardupilot
+   sim_vehicle.py -D -v ArduCopter -f JSON --add-param-file=/root/ardupilot_gazebo_ap/config/gazebo-iris-gimbal-ngps.parm --console --map
+   ```
+
+   **Terminal 4 - Run State Estimator:**
+   ```bash
+   docker exec -it ap_nongps_container bash
+   ```
+   Inside the container:
+   ```bash
+   cd /root/ap_nongps/src
+   python video_to_feature.py
+   ```
+
+   Expected output in Terminal 4:
+   ```
+   Heartbeat from system (system 1 component 0)
+   Offset x, y(in cms): ...
+   ```
+
+6. **Stop the container**
    ```bash
    docker-compose down
    ```
@@ -112,13 +159,21 @@ xhost +local:docker
 docker exec -it ap_nongps_container bash -c "echo \$DISPLAY"
 ```
 
-**GPU Not Working:**
+**GPU Not Working** (Optional - only if you installed NVIDIA Container Toolkit):
 ```bash
 # Verify nvidia-docker is installed
 docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 
-# Check GPU access in container
-docker exec -it ap_nongps_container nvidia-smi
+# Use GPU-enabled configuration
+docker-compose down
+docker-compose -f docker-compose.gpu.yml up -d
+```
+
+**Rebuild After Changes:**
+```bash
+docker-compose down
+docker-compose build
+docker-compose up -d
 ```
 
 ---

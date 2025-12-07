@@ -111,7 +111,7 @@ COPY . /root/ap_nongps/
 WORKDIR /root/ap_nongps
 RUN pip3 install --upgrade pip && \
     pip3 install "numpy>=1.21.0,<1.25.0" && \
-    pip3 install opencv-python==4.8.1.78 && \
+    pip3 install opencv-python==4.6.0.66 && \
     pip3 install -r requirements.txt
 
 # Set display for X11 forwarding
