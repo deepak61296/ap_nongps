@@ -196,7 +196,17 @@ docker-compose up -d
 
 ## Manual Setup (Alternative to Docker)
 
+> **Note:** Docker setup (above) is the **recommended method** for most users. Manual setup is provided for advanced users or specific use cases.
+
 If you prefer to install dependencies directly on your system, follow these instructions.
+
+### Prerequisites
+
+Before running the setup script, install these basic tools:
+```bash
+sudo apt-get update
+sudo apt-get install -y git cmake build-essential python3-pip python3-venv wget lsb-release
+```
 
 ### Setup script
 You can clone this repo to $HOME and run the ./setup.sh script directly to set it all up at once (give root access if required (sudo)).

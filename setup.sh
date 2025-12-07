@@ -54,6 +54,19 @@ fi
 echo "Updating package lists..."
 sudo apt update
 
+# Add Gazebo Harmonic repository
+echo "Adding Gazebo Harmonic repository..."
+sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+
+# Update package lists again after adding Gazebo repo
+echo "Updating package lists with Gazebo repository..."
+sudo apt update
+
+# Install Gazebo Harmonic
+echo "Installing Gazebo Harmonic..."
+sudo apt install -y gz-harmonic
+
 # Install necessary dependencies
 echo "Installing required libraries for Gazebo and GStreamer..."
 sudo apt install -y libgz-sim8-dev rapidjson-dev
